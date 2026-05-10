@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { User, LogOut, Settings, Sun, Moon, Share2 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -20,6 +20,14 @@ export default function Header() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const location = useLocation();
+
+  // ProtectedRoute에서 리다이렉트된 경우 로그인 모달 자동 오픈
+  useEffect(() => {
+    if (location.state?.authRequired && !user) {
+      setShowAuthModal(true);
+    }
+  }, [location.state, user]);
 
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {

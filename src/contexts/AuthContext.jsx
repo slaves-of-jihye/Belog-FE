@@ -30,8 +30,9 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    const user = authService.getCurrentUser();
-    dispatch({ type: 'SET_USER', payload: user });
+    authService.getCurrentUser().then((user) => {
+      dispatch({ type: 'SET_USER', payload: user });
+    });
   }, []);
 
   const login = async (email, password) => {
@@ -41,7 +42,11 @@ export function AuthProvider({ children }) {
       dispatch({ type: 'SET_USER', payload: user });
       return user;
     } catch (err) {
-      dispatch({ type: 'SET_ERROR', payload: err.message });
+      if (err.message === 'SESSION_EXPIRED') {
+        dispatch({ type: 'LOGOUT' });
+      } else {
+        dispatch({ type: 'SET_ERROR', payload: err.message });
+      }
       throw err;
     }
   };

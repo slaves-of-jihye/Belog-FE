@@ -1,45 +1,42 @@
-/**
- * 인증 서비스 (Mock)
- * 추후 백엔드 API 연결 시 이 파일만 수정하면 됩니다.
- */
-import { mockUsers } from '../data/mockData';
+import { apiClient, setToken, clearToken } from './apiClient';
 
-const STORAGE_KEY = 'sharedata_auth';
-
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const authService = {
   async login(email, password) {
-    await delay(500);
-    const user = mockUsers.find((u) => u.email === email && u.password === password);
-    if (!user) throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
-    const { password: _, ...userData } = user;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
-    return userData;
+    const { user, accessToken } = await apiClient.post('/api/auth/login', { email, password });
+    setToken(accessToken);
+    return user;
   },
 
   async signup(name, email, password) {
-    await delay(500);
-    const exists = mockUsers.find((u) => u.email === email);
-    if (exists) throw new Error('이미 사용 중인 이메일입니다.');
-    const newUser = {
-      id: `user-${Date.now()}`,
-      email,
-      name,
-      avatar: null,
-      createdAt: new Date().toISOString(),
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
-    return newUser;
+    const { user, accessToken } = await apiClient.post('/api/auth/signup', { name, email, password });
+    setToken(accessToken);
+    return user;
   },
 
   async logout() {
-    await delay(200);
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      await apiClient.post('/api/auth/logout', {});
+    } finally {
+      clearToken();
+    }
   },
 
-  getCurrentUser() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : null;
+  async getCurrentUser() {
+    try {
+      // Refresh Token 쿠키로 세션 복원 시도
+      const res = await fetch(`${BASE_URL}/api/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!res.ok) return null;
+      const { accessToken } = await res.json();
+      setToken(accessToken);
+      const { user } = await apiClient.get('/api/auth/me');
+      return user;
+    } catch {
+      return null;
+    }
   },
 };

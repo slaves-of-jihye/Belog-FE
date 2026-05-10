@@ -58,11 +58,6 @@ export default function LoginForm({ onSuccess }) {
         로그인
       </Button>
 
-      <div className="auth-test-info">
-        <strong>테스트 계정</strong><br />
-        이메일: test@sharedata.com<br />
-        비밀번호: test1234
-      </div>
     </form>
   );
 }

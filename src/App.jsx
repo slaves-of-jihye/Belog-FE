@@ -11,6 +11,7 @@ import BoardPage from './pages/BoardPage';
 import PostPage from './pages/PostPage';
 import CreatePostPage from './pages/CreatePostPage';
 import ProfilePage from './pages/ProfilePage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -25,9 +26,9 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/board/:category" element={<BoardPage />} />
                 <Route path="/post/:id" element={<PostPage />} />
-                <Route path="/create" element={<CreatePostPage />} />
-                <Route path="/edit/:id" element={<CreatePostPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/create" element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
+                <Route path="/edit/:id" element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               </Routes>
             </Layout>
             <Footer />

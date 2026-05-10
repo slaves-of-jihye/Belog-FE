@@ -1,8 +1,3 @@
-/**
- * Mock 데이터 모듈
- * 추후 백엔드 API로 교체 시 서비스 계층만 수정하면 됩니다.
- */
-
 const today = new Date();
 const addDays = (days) => {
   const d = new Date(today);
@@ -14,12 +9,6 @@ const subDays = (days) => {
   d.setDate(d.getDate() - days);
   return d.toISOString();
 };
-
-export const mockUsers = [
-  { id: 'user-1', email: 'test@sharedata.com', password: 'test1234', name: '김민수', avatar: null, createdAt: subDays(30) },
-  { id: 'user-2', email: 'user2@sharedata.com', password: 'test1234', name: '이지현', avatar: null, createdAt: subDays(25) },
-  { id: 'user-3', email: 'user3@sharedata.com', password: 'test1234', name: '박서준', avatar: null, createdAt: subDays(15) },
-];
 
 export const boardCategories = [
   { id: 'major', name: '전공 게시판', description: '전공 관련 자료 및 정보를 공유합니다.' },
