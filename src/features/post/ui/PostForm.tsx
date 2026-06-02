@@ -94,7 +94,7 @@ export function PostForm({ onSuccess }: PostFormProps) {
           <option value="major">전공</option>
           <option value="general">일반과목</option>
           <option value="free">자유</option>
-          <option value="sideProject">사이드 프로젝트</option>
+          <option value="project">사이드 프로젝트</option>
         </Select>
       </FormGroup>
 

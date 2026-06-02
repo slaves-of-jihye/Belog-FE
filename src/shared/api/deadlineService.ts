@@ -1,11 +1,18 @@
 import { mockDeadlines, MockDeadline } from '../lib/mockData';
 
-const STORAGE_KEY = 'sharedata_deadlines';
+const STORAGE_KEY = 'belog_deadlines';
 const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 function getDeadlines(): MockDeadline[] {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) return JSON.parse(stored) as MockDeadline[];
+  
+  const oldStored = localStorage.getItem('sharedata_deadlines');
+  if (oldStored) {
+    localStorage.setItem(STORAGE_KEY, oldStored);
+    return JSON.parse(oldStored) as MockDeadline[];
+  }
+  
   return [...mockDeadlines];
 }
 

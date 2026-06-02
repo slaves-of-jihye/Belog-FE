@@ -19,9 +19,10 @@ import { CalendarDayModal } from './CalendarDayModal';
 interface CalendarProps {
   deadlines: MockDeadline[];
   onCreateDeadline: (data: Omit<MockDeadline, 'id' | 'completed'>) => Promise<any>;
+  onDeleteDeadline?: (id: string) => Promise<any>;
 }
 
-export function Calendar({ deadlines, onCreateDeadline }: CalendarProps) {
+export function Calendar({ deadlines, onCreateDeadline, onDeleteDeadline }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showDayModal, setShowDayModal] = useState(false);
@@ -114,6 +115,7 @@ export function Calendar({ deadlines, onCreateDeadline }: CalendarProps) {
         date={selectedDate}
         events={selectedDate ? getEventsForDay(selectedDate) : []}
         onCreateDeadline={onCreateDeadline}
+        onDeleteDeadline={onDeleteDeadline}
       />
     </>
   );

@@ -2,14 +2,16 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { formatRelativeDate, getDeadlineUrgency, formatDate } from '../../../shared/lib/dateUtils';
 import { MockDeadline } from '../../../shared/lib/mockData';
+import { Trash2 } from 'lucide-react';
 
 interface DeadlineCardProps {
   deadline: MockDeadline;
   index?: number;
   onToggleComplete: (id: string) => Promise<void>;
+  onDelete?: (id: string) => Promise<void>;
 }
 
-export function DeadlineCard({ deadline, index = 0, onToggleComplete }: DeadlineCardProps) {
+export function DeadlineCard({ deadline, index = 0, onToggleComplete, onDelete }: DeadlineCardProps) {
   const urgency = getDeadlineUrgency(deadline.dueDate);
   const relativeDate = formatRelativeDate(deadline.dueDate);
 
@@ -32,6 +34,11 @@ export function DeadlineCard({ deadline, index = 0, onToggleComplete }: Deadline
           </Due>
         </CardMeta>
       </CardBody>
+      {onDelete && (
+        <DeleteButton onClick={() => onDelete(deadline.id)} aria-label="삭제">
+          <Trash2 size={14} />
+        </DeleteButton>
+      )}
     </Card>
   );
 }
@@ -136,4 +143,23 @@ const urgencyTextColors: Record<string, string> = {
 const Due = styled.span<{ $urgency: string }>`
   font-size: var(--font-size-xs);
   color: ${(p) => urgencyTextColors[p.$urgency] || 'var(--color-text-tertiary)'};
+`;
+
+const DeleteButton = styled.button`
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+
+  &:hover {
+    color: var(--color-danger);
+    background: var(--color-surface-hover);
+  }
 `;

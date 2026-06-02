@@ -1,4 +1,4 @@
-export type BoardType = 'major' | 'general' | 'free' | 'sideProject';
+export type BoardType = 'major' | 'general' | 'free' | 'project';
 
 export interface Post {
   postId: number;

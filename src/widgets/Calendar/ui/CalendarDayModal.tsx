@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import { Calendar, Plus } from 'lucide-react';
+import { Calendar, Plus, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { formatDate, getDeadlineUrgency, formatRelativeDate } from '../../../shared/lib/dateUtils';
@@ -14,9 +14,10 @@ interface CalendarDayModalProps {
   date: Date | null;
   events: MockDeadline[];
   onCreateDeadline: (data: Omit<MockDeadline, 'id' | 'completed'>) => Promise<any>;
+  onDeleteDeadline?: (id: string) => Promise<any>;
 }
 
-export function CalendarDayModal({ isOpen, onClose, date, events, onCreateDeadline }: CalendarDayModalProps) {
+export function CalendarDayModal({ isOpen, onClose, date, events, onCreateDeadline, onDeleteDeadline }: CalendarDayModalProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -90,7 +91,14 @@ export function CalendarDayModal({ isOpen, onClose, date, events, onCreateDeadli
                       </EventPriority>
                     </EventMeta>
                   </EventBody>
-                  {event.completed && <DoneBadge>완료</DoneBadge>}
+                  <EventActions>
+                    {event.completed && <DoneBadge>완료</DoneBadge>}
+                    {onDeleteDeadline && (
+                      <DeleteIconBtn onClick={() => onDeleteDeadline(event.id)} aria-label="삭제">
+                        <Trash2 size={14} />
+                      </DeleteIconBtn>
+                    )}
+                  </EventActions>
                 </EventItem>
               );
             })}
@@ -258,6 +266,32 @@ const DoneBadge = styled.div`
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   flex-shrink: 0;
+`;
+
+const EventActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  align-self: center;
+`;
+
+const DeleteIconBtn = styled.button`
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: var(--color-danger);
+    background: var(--color-surface-hover);
+  }
 `;
 
 const AddSection = styled.div`

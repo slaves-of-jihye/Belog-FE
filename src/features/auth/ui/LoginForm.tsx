@@ -60,12 +60,6 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           로그인
         </Button>
       </SubmitWrapper>
-
-      <AuthDivider>테스트 계정</AuthDivider>
-      <AuthTestInfo>
-        닉네임: <strong>kim123</strong><br />
-        비밀번호: <strong>1234</strong>
-      </AuthTestInfo>
     </AuthForm>
   );
 }
@@ -122,32 +116,4 @@ const SubmitWrapper = styled.div`
   margin-top: var(--space-2);
 `;
 
-const AuthDivider = styled.div`
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-xs);
 
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--color-border);
-  }
-`;
-
-const AuthTestInfo = styled.div`
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-accent-bg);
-  border: 1px solid var(--color-accent-primary);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-relaxed);
-
-  strong {
-    color: var(--color-accent-primary);
-  }
-`;

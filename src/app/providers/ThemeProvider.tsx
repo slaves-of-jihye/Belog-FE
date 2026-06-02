@@ -13,12 +13,19 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('sharedata_theme') || 'light';
+    const newTheme = localStorage.getItem('belog_theme');
+    if (newTheme) return newTheme;
+    const oldTheme = localStorage.getItem('sharedata_theme');
+    if (oldTheme) {
+      localStorage.setItem('belog_theme', oldTheme);
+      return oldTheme;
+    }
+    return 'light';
   });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('sharedata_theme', theme);
+    localStorage.setItem('belog_theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {

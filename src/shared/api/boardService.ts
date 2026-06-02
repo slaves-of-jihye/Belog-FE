@@ -1,11 +1,18 @@
 import { mockPosts, boardCategories, MockPost, BoardCategory, Comment } from '../lib/mockData';
 
-const STORAGE_KEY = 'sharedata_posts';
+const STORAGE_KEY = 'belog_posts';
 const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 function getPosts(): MockPost[] {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) return JSON.parse(stored) as MockPost[];
+  
+  const oldStored = localStorage.getItem('sharedata_posts');
+  if (oldStored) {
+    localStorage.setItem(STORAGE_KEY, oldStored);
+    return JSON.parse(oldStored) as MockPost[];
+  }
+  
   return [...mockPosts];
 }
 

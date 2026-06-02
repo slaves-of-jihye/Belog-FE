@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { Share2, Globe, MessageCircle, Mail } from 'lucide-react';
+import { Globe, MessageCircle, Mail } from 'lucide-react';
 
 export interface FooterProps extends React.HTMLAttributes<HTMLElement> {}
 
@@ -10,8 +11,10 @@ export function Footer(props: FooterProps) {
       <FooterInner>
         <FooterBrand>
           <FooterLogo>
-            <Share2 size={24} />
-            <span>ShareData</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <text x="50%" y="54%" dominantBaseline="middle" textAnchor="middle" fill="currentColor" fontSize="18" fontWeight="800" fontFamily="system-ui, sans-serif">B</text>
+            </svg>
+            <span>Belog</span>
           </FooterLogo>
           <p>지식과 자료를 나누는 공간</p>
         </FooterBrand>
@@ -39,7 +42,7 @@ export function Footer(props: FooterProps) {
         </FooterLinks>
       </FooterInner>
       <FooterBottom>
-        <p>&copy; {new Date().getFullYear()} ShareData. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Belog. All rights reserved.</p>
       </FooterBottom>
     </FooterContainer>
   );

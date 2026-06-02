@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { User, LogOut, Settings, Sun, Moon, Share2 } from 'lucide-react';
+import { User, LogOut, Settings, Sun, Moon } from 'lucide-react';
 import styled from '@emotion/styled';
 import { useAuth } from '../../../entities/user/model/AuthProvider';
 import { useTheme } from '../../../app/providers/ThemeProvider';
@@ -70,9 +70,11 @@ export function Header(props: HeaderProps) {
         <HeaderInner>
           <HeaderLogo to="/">
             <HeaderLogoIcon>
-              <Share2 size={18} color="#fff" />
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <text x="50%" y="54%" dominantBaseline="middle" textAnchor="middle" fill="#fff" fontSize="18" fontWeight="800" fontFamily="system-ui, sans-serif">B</text>
+              </svg>
             </HeaderLogoIcon>
-            <HeaderLogoText>ShareData</HeaderLogoText>
+            <HeaderLogoText>Belog</HeaderLogoText>
           </HeaderLogo>
 
           <HeaderNav id="main-nav">

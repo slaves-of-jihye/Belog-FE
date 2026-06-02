@@ -7,9 +7,10 @@ import { DeadlineCard } from './DeadlineCard';
 interface DeadlineListProps {
   upcomingDeadlines: MockDeadline[];
   onToggleComplete: (id: string) => Promise<void>;
+  onDelete?: (id: string) => Promise<void>;
 }
 
-export function DeadlineList({ upcomingDeadlines, onToggleComplete }: DeadlineListProps) {
+export function DeadlineList({ upcomingDeadlines, onToggleComplete, onDelete }: DeadlineListProps) {
   return (
     <Container id="deadline-list">
       <Header>
@@ -30,7 +31,7 @@ export function DeadlineList({ upcomingDeadlines, onToggleComplete }: DeadlineLi
 
         {upcomingDeadlines.length > 0 &&
           upcomingDeadlines.map((deadline, idx) => (
-            <DeadlineCard key={deadline.id} deadline={deadline} index={idx} onToggleComplete={onToggleComplete} />
+            <DeadlineCard key={deadline.id} deadline={deadline} index={idx} onToggleComplete={onToggleComplete} onDelete={onDelete} />
           ))
         }
       </List>

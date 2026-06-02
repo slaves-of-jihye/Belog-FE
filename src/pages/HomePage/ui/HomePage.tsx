@@ -5,17 +5,17 @@ import { DeadlineList } from '../../../widgets/Deadline/ui/DeadlineList';
 import { useDeadline } from '../../../app/providers/DeadlineProvider';
 
 export function HomePage() {
-  const { deadlines, upcomingDeadlines, createDeadline, toggleComplete } = useDeadline();
+  const { deadlines, upcomingDeadlines, createDeadline, toggleComplete, deleteDeadline } = useDeadline();
 
   return (
     <Container>
       <Welcome>
-        <h1>ShareData</h1>
+        <h1>Belog</h1>
         <p>정보를 공유하고 과제를 관리하세요.</p>
       </Welcome>
       <Content>
-        <Calendar deadlines={deadlines} onCreateDeadline={createDeadline} />
-        <DeadlineList upcomingDeadlines={upcomingDeadlines} onToggleComplete={toggleComplete} />
+        <Calendar deadlines={deadlines} onCreateDeadline={createDeadline} onDeleteDeadline={deleteDeadline} />
+        <DeadlineList upcomingDeadlines={upcomingDeadlines} onToggleComplete={toggleComplete} onDelete={deleteDeadline} />
       </Content>
     </Container>
   );
