@@ -13,12 +13,12 @@ import {
   CalendarDay,
 } from '../../../shared/lib/dateUtils';
 import { ko } from 'date-fns/locale';
-import { MockDeadline } from '../../../shared/lib/mockData';
+import { CreateDeadlineRequest, Deadline } from '../../../entities/deadline/model/types';
 import { CalendarDayModal } from './CalendarDayModal';
 
 interface CalendarProps {
-  deadlines: MockDeadline[];
-  onCreateDeadline: (data: Omit<MockDeadline, 'id' | 'completed'>) => Promise<any>;
+  deadlines: Deadline[];
+  onCreateDeadline: (data: CreateDeadlineRequest) => Promise<any>;
   onDeleteDeadline?: (id: string) => Promise<any>;
 }
 
@@ -36,7 +36,7 @@ export function Calendar({ deadlines, onCreateDeadline, onDeleteDeadline }: Cale
     setSelectedDate(new Date());
   };
 
-  const getEventsForDay = (date: Date): MockDeadline[] => {
+  const getEventsForDay = (date: Date): Deadline[] => {
     return deadlines.filter((d) => isSameDay(new Date(d.dueDate), date));
   };
 

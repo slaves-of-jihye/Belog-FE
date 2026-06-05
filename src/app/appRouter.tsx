@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '../entities/user/model/AuthProvider';
 import { ThemeProvider } from './providers/ThemeProvider';
-import { BoardProvider } from './providers/BoardProvider';
 import { DeadlineProvider } from './providers/DeadlineProvider';
 import { Header } from '../widgets/Header/ui/Header';
 import { Footer } from '../shared/ui/Footer';
@@ -20,21 +19,19 @@ export function AppRouter() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <BoardProvider>
-            <DeadlineProvider>
-              <Header />
-              <Routes>
-                <Route path="/" element={<Layout><HomePage /></Layout>} />
-                <Route path="/board/:boardType" element={<BoardPage />} />
-                <Route path="/post/:id" element={<Layout><PostPage /></Layout>} />
-                <Route path="/create" element={<ProtectedRoute><Layout><CreatePostPage /></Layout></ProtectedRoute>} />
-                <Route path="/edit/:id" element={<ProtectedRoute><Layout><CreatePostPage /></Layout></ProtectedRoute>} />
-                <Route path="/profile" element={<ProtectedRoute><Layout><ProfilePage /></Layout></ProtectedRoute>} />
-                <Route path="/login" element={<Layout><LoginForm /></Layout>} />
-              </Routes>
-              <Footer />
-            </DeadlineProvider>
-          </BoardProvider>
+          <DeadlineProvider>
+            <Header />
+            <Routes>
+              <Route path="/" element={<Layout><HomePage /></Layout>} />
+              <Route path="/board/:boardType" element={<BoardPage />} />
+              <Route path="/post/:id" element={<Layout><PostPage /></Layout>} />
+              <Route path="/create" element={<ProtectedRoute><Layout><CreatePostPage /></Layout></ProtectedRoute>} />
+              <Route path="/edit/:id" element={<ProtectedRoute><Layout><CreatePostPage /></Layout></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Layout><ProfilePage /></Layout></ProtectedRoute>} />
+              <Route path="/login" element={<Layout><LoginForm /></Layout>} />
+            </Routes>
+            <Footer />
+          </DeadlineProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

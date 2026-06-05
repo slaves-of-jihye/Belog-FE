@@ -1,33 +1,54 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { useBoard } from '../../../app/providers/BoardProvider';
 import { PostDetail } from '../../../widgets/PostDetail/ui/PostDetail';
+import { getPostDetail, deletePost } from '../../../entities/post/api/postApi';
+import { Post } from '../../../entities/post/model/types';
 
 export function PostPage() {
   const { id } = useParams<{ id: string }>();
-  const { currentPost, loadPost, isLoading, deletePost, toggleLike, addComment, deleteComment } = useBoard();
+  const [post, setPost] = useState<Post | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (id) loadPost(id);
-  }, [id, loadPost]);
+    const loadPost = async () => {
+      if (!id) return;
+      setIsLoading(true);
+      setError('');
+      try {
+        const nextPost = await getPostDetail(id);
+        setPost(nextPost);
+      } catch {
+        setError('게시물을 불러오지 못했습니다.');
+      }
+      setIsLoading(false);
+    };
+
+    loadPost();
+  }, [id]);
+
+  const handleDelete = async (postId: string) => {
+    await deletePost(postId);
+  };
 
   if (isLoading) {
     return <LoadingText>로딩 중...</LoadingText>;
   }
 
+  if (error) {
+    return <LoadingText>{error}</LoadingText>;
+  }
+
   return (
     <Container>
-      <BackLink to={currentPost ? `/board/${currentPost.category}` : '/'}>
+      <BackLink to={post ? `/board/${post.boardType}` : '/'}>
         <ArrowLeft size={16} /> 목록으로
       </BackLink>
       <PostDetail
-        post={currentPost}
-        onDelete={deletePost}
-        onToggleLike={toggleLike}
-        onAddComment={addComment}
-        onDeleteComment={deleteComment}
+        post={post}
+        onDelete={handleDelete}
       />
     </Container>
   );

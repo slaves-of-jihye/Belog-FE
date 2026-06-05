@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { Clock, CheckCircle } from 'lucide-react';
-import { MockDeadline } from '../../../shared/lib/mockData';
+import { Deadline } from '../../../entities/deadline/model/types';
 import { DeadlineCard } from './DeadlineCard';
 
 interface DeadlineListProps {
-  upcomingDeadlines: MockDeadline[];
+  upcomingDeadlines: Deadline[];
   onToggleComplete: (id: string) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;
 }

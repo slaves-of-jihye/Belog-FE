@@ -7,7 +7,7 @@ interface AuthContextValue {
   isLoading: boolean;
   error: string | null;
   setUser: (user: User | null) => void;
-  login: (nickname: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
@@ -24,14 +24,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const normalizeUser = useCallback((userData: any) => {
+    const nextUser = { ...userData };
+    if (!nextUser.nickname) {
+      nextUser.nickname = nextUser.name;
+    }
+    return nextUser;
+  }, []);
+
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('accessToken');
 
       if (token) {
         try {
-          const response = await apiClient.get<User>('/auth/me');
-          setUser(response.data);
+          const response = await apiClient.get('/auth/me');
+          const userData = response.data.user;
+          setUser(normalizeUser(userData));
         } catch {
           localStorage.removeItem('accessToken');
           setUser(null);
@@ -42,45 +51,52 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     fetchUser();
-  }, []);
+  }, [normalizeUser]);
 
-  const login = useCallback(async (nickname: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     setError(null);
     try {
-      const response = await apiClient.post('/auth/login', { nickname, password });
+      const response = await apiClient.post('/auth/login', { email, password });
       const { accessToken, user: userData } = response.data as { accessToken?: string; user?: User };
       if (accessToken) {
         localStorage.setItem('accessToken', accessToken);
       }
       if (userData) {
-        setUser(userData);
+        setUser(normalizeUser(userData));
       }
     } catch (err: any) {
       const message = err?.response?.data?.message || '로그인에 실패했습니다.';
       setError(message);
       throw new Error(message);
     }
-  }, []);
+  }, [normalizeUser]);
 
   const signup = useCallback(async (name: string, email: string, password: string) => {
     setError(null);
     try {
-      const response = await apiClient.post('/auth/signup', { nickname: name, email, password });
+      const response = await apiClient.post('/auth/signup', { name, email, password });
       const { accessToken, user: userData } = response.data as { accessToken?: string; user?: User };
       if (accessToken) {
         localStorage.setItem('accessToken', accessToken);
       }
       if (userData) {
-        setUser(userData);
+        setUser(normalizeUser(userData));
       }
     } catch (err: any) {
       const message = err?.response?.data?.message || '회원가입에 실패했습니다.';
       setError(message);
       throw new Error(message);
     }
-  }, []);
+  }, [normalizeUser]);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    try {
+      await apiClient.post('/auth/logout');
+    } catch {
+      localStorage.removeItem('accessToken');
+      setUser(null);
+      return;
+    }
     localStorage.removeItem('accessToken');
     setUser(null);
   }, []);

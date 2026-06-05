@@ -1,30 +1,27 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import { Paperclip, Link2, Heart } from 'lucide-react';
+import { Paperclip, Link2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../entities/user/model/AuthProvider';
 import { formatDate } from '../../../shared/lib/dateUtils';
-import { boardCategories, MockPost } from '../../../shared/lib/mockData';
+import { getBoardCategory } from '../../../shared/lib/boards';
+import { Post } from '../../../entities/post/model/types';
 import { Button } from '../../../shared/ui/Button';
 import { Modal } from '../../../shared/ui/Modal';
-import { CommentSection } from './CommentSection';
 
 interface PostDetailProps {
-  post: MockPost | null;
+  post: Post | null;
   onDelete: (id: string) => Promise<void>;
-  onToggleLike: (postId: string, userId: string) => Promise<any>;
-  onAddComment: (postId: string, data: { authorId: string; authorName: string; content: string }) => Promise<any>;
-  onDeleteComment: (postId: string, commentId: string) => Promise<any>;
 }
 
-export function PostDetail({ post, onDelete, onToggleLike, onAddComment, onDeleteComment }: PostDetailProps) {
+export function PostDetail({ post, onDelete }: PostDetailProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   if (!post) return null;
 
-  const category = boardCategories.find((c) => c.id === post.category);
+  const category = getBoardCategory(post.boardType);
 
   const getValidUrl = (url?: string): string => {
     if (!url) return '#';
@@ -49,34 +46,21 @@ export function PostDetail({ post, onDelete, onToggleLike, onAddComment, onDelet
     return `<p>${html}</p>`;
   };
 
-  const isLiked = post.likedUsers?.includes(String(user?.id));
-
   return (
     <Container>
       <Header>
         {category && <CategoryBadge>{category.name}</CategoryBadge>}
         <Title>{post.title}</Title>
         <Meta>
-          <span>{post.authorName}</span>
+          <span>{post.authorNickname}</span>
           <Separator>·</Separator>
           <span>{formatDate(post.createdAt, 'yyyy.MM.dd HH:mm')}</span>
           <Separator>·</Separator>
           <span>조회 {post.views}</span>
-          <Separator>·</Separator>
-          <LikeButton
-            $liked={!!isLiked}
-            onClick={() => {
-              if (!user) { alert('로그인이 필요합니다.'); return; }
-              onToggleLike(post.id, String(user.id));
-            }}
-          >
-            <Heart size={14} fill={isLiked ? 'currentColor' : 'none'} />
-            {post.likes || 0}
-          </LikeButton>
         </Meta>
         {String(user?.id) === post.authorId && (
           <Actions>
-            <Button size="sm" variant="secondary" onClick={() => navigate(`/edit/${post.id}?category=${post.category}`)}>수정</Button>
+            <Button size="sm" variant="secondary" onClick={() => navigate(`/edit/${post.postId}?boardType=${post.boardType}`)}>수정</Button>
             <Button size="sm" variant="secondary" onClick={() => setIsDeleteModalOpen(true)}>삭제</Button>
           </Actions>
         )}
@@ -90,9 +74,9 @@ export function PostDetail({ post, onDelete, onToggleLike, onAddComment, onDelet
           <ModalFooter>
             <Button variant="secondary" onClick={() => setIsDeleteModalOpen(false)}>취소</Button>
             <Button variant="danger" onClick={async () => {
-              await onDelete(post.id);
+              await onDelete(post.postId);
               setIsDeleteModalOpen(false);
-              navigate(`/board/${post.category}`);
+              navigate(`/board/${post.boardType}`);
             }}>삭제</Button>
           </ModalFooter>
         }
@@ -100,34 +84,28 @@ export function PostDetail({ post, onDelete, onToggleLike, onAddComment, onDelet
         <p>정말 이 게시물을 삭제하시겠습니까?</p>
       </Modal>
 
-      {post.type === 'markdown' && (
-        <Content dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }} />
-      )}
+      <Content dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }} />
 
-      {post.type === 'file' && (
+      {post.fileName && (
         <FileBlock>
           <FileIcon><Paperclip size={32} /></FileIcon>
           <FileInfo>
             <h3>{post.fileName}</h3>
-            <p>{post.fileSize}</p>
           </FileInfo>
-          <Button variant="secondary" size="sm">다운로드</Button>
+          {post.linkUrl && (
+            <DownloadLink href={post.linkUrl} download={post.fileName}>
+              다운로드
+            </DownloadLink>
+          )}
         </FileBlock>
       )}
 
-      {post.type === 'link' && (
+      {post.linkUrl && !post.fileName && (
         <LinkBlock href={getValidUrl(post.linkUrl)} target="_blank" rel="noopener noreferrer">
-          <LinkTitle><Link2 size={16} /> {post.linkTitle || post.linkUrl}</LinkTitle>
-          {post.linkDescription && <LinkDesc>{post.linkDescription}</LinkDesc>}
+          <LinkTitle><Link2 size={16} /> {post.linkUrl}</LinkTitle>
           <LinkUrl>{post.linkUrl}</LinkUrl>
         </LinkBlock>
       )}
-
-      <CommentSection
-        post={post}
-        onAddComment={onAddComment}
-        onDeleteComment={onDeleteComment}
-      />
     </Container>
   );
 }
@@ -173,23 +151,6 @@ const Meta = styled.div`
 
 const Separator = styled.span`
   color: var(--color-text-tertiary);
-`;
-
-const LikeButton = styled.button<{ $liked: boolean }>`
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: ${(p) => (p.$liked ? 'var(--color-danger)' : 'var(--color-text-tertiary)')};
-  padding: 0;
-  font-size: var(--font-size-sm);
-  transition: color var(--transition-fast);
-
-  &:hover {
-    color: var(--color-danger);
-  }
 `;
 
 const Actions = styled.div`
@@ -242,6 +203,24 @@ const FileInfo = styled.div`
   flex: 1;
 `;
 
+const DownloadLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+  }
+`;
+
 const LinkBlock = styled.a`
   display: block;
   padding: var(--space-5);
@@ -263,12 +242,6 @@ const LinkTitle = styled.div`
   gap: var(--space-2);
   font-weight: var(--font-weight-medium);
   color: var(--color-accent-primary);
-  margin-bottom: var(--space-2);
-`;
-
-const LinkDesc = styled.div`
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
   margin-bottom: var(--space-2);
 `;
 

@@ -9,7 +9,7 @@ interface LoginFormProps {
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
   const { login, error, clearError } = useAuth();
-  const [nickname, setNickname] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -18,7 +18,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     setLoading(true);
 
     try {
-      await login(nickname, password);
+      await login(email, password);
       if (onSuccess) onSuccess();
     } catch {
       // error is handled in context
@@ -30,13 +30,13 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   return (
     <AuthForm onSubmit={handleSubmit}>
       <AuthField>
-        <label htmlFor="login-nickname">닉네임</label>
+        <label htmlFor="login-email">이메일</label>
         <input
-          id="login-nickname"
-          type="text"
-          value={nickname}
-          onChange={(e) => { clearError(); setNickname(e.target.value); }}
-          placeholder="닉네임을 입력하세요"
+          id="login-email"
+          type="email"
+          value={email}
+          onChange={(e) => { clearError(); setEmail(e.target.value); }}
+          placeholder="이메일을 입력하세요"
           required
         />
       </AuthField>
@@ -115,5 +115,4 @@ const AuthError = styled.div`
 const SubmitWrapper = styled.div`
   margin-top: var(--space-2);
 `;
-
 

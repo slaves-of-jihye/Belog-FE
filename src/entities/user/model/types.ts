@@ -1,10 +1,12 @@
 export interface User {
-  id: number;
+  id: string;
+  name: string;
+  email: string;
   nickname: string;
 }
 
 export interface AuthRequest {
-  nickname: string;
+  email: string;
   password: string;
 }
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { formatRelativeDate, getDeadlineUrgency, formatDate } from '../../../shared/lib/dateUtils';
-import { MockDeadline } from '../../../shared/lib/mockData';
+import { Deadline } from '../../../entities/deadline/model/types';
 import { Trash2 } from 'lucide-react';
 
 interface DeadlineCardProps {
-  deadline: MockDeadline;
+  deadline: Deadline;
   index?: number;
   onToggleComplete: (id: string) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;

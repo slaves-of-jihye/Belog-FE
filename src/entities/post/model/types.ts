@@ -1,15 +1,17 @@
 export type BoardType = 'major' | 'general' | 'free' | 'project';
 
 export interface Post {
-  postId: number;
+  postId: string;
   title: string;
   boardType: BoardType;
   content: string;
-  fileName: string;
-  linkUrl: string;
-  authorId: number;
+  fileName: string | null;
+  linkUrl: string | null;
+  authorId: string;
   authorNickname: string;
   createdAt: string;
+  updatedAt?: string | null;
+  views: number;
 }
 
 export interface PostResponse {
@@ -18,7 +20,7 @@ export interface PostResponse {
 }
 
 export interface DeletePostRequest {
-  userId: number;
+  userId?: string;
 }
 
 export interface DeletePostResponse {
@@ -26,7 +28,7 @@ export interface DeletePostResponse {
 }
 
 export interface PostSummary {
-  postId: number;
+  postId: string;
   title: string;
   authorNickname: string;
   views: number;
@@ -40,13 +42,13 @@ export interface PostListResponse {
 }
 
 export interface UpdatePostRequest {
-  userId: number;
+  userId?: string;
   title: string;
   content: string;
 }
 
 export interface UpdatedPost {
-  postId: number;
+  postId: string;
   title: string;
   content: string;
   authorNickname: string;

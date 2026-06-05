@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { createPost } from '../../../entities/post/api/postApi';
 import { BoardType } from '../../../entities/post/model/types';
+import { boardCategories } from '../../../shared/lib/boards';
 import { Button } from '../../../shared/ui/Button';
 import '@toast-ui/editor/dist/toastui-editor.css';
 
@@ -12,8 +13,14 @@ export interface PostFormProps {
 
 export function PostForm({ onSuccess }: PostFormProps) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const requestedBoardType = searchParams.get('boardType') || 'free';
+  let initialBoardType: BoardType = 'free';
+  if (boardCategories.some((category) => category.id === requestedBoardType)) {
+    initialBoardType = requestedBoardType as BoardType;
+  }
   const [title, setTitle] = useState('');
-  const [boardType, setBoardType] = useState<BoardType>('free');
+  const [boardType, setBoardType] = useState<BoardType>(initialBoardType);
   const [loading, setLoading] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstanceRef = useRef<any>(null);

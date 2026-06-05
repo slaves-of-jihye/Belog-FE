@@ -4,7 +4,7 @@ import { Calendar, Plus, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { formatDate, getDeadlineUrgency, formatRelativeDate } from '../../../shared/lib/dateUtils';
-import { MockDeadline } from '../../../shared/lib/mockData';
+import { CreateDeadlineRequest, Deadline } from '../../../entities/deadline/model/types';
 import { Modal } from '../../../shared/ui/Modal';
 import { Button } from '../../../shared/ui/Button';
 
@@ -12,8 +12,8 @@ interface CalendarDayModalProps {
   isOpen: boolean;
   onClose: () => void;
   date: Date | null;
-  events: MockDeadline[];
-  onCreateDeadline: (data: Omit<MockDeadline, 'id' | 'completed'>) => Promise<any>;
+  events: Deadline[];
+  onCreateDeadline: (data: CreateDeadlineRequest) => Promise<any>;
   onDeleteDeadline?: (id: string) => Promise<any>;
 }
 

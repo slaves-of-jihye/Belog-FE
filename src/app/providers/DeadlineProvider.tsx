@@ -1,11 +1,11 @@
 import React, { createContext, useReducer, useCallback, useContext, useEffect, ReactNode } from 'react';
 import { deadlineService } from '../../shared/api/deadlineService';
-import { MockDeadline } from '../../shared/lib/mockData';
+import { CreateDeadlineRequest, Deadline } from '../../entities/deadline/model/types';
 import { useAuth } from '../../entities/user/model/AuthProvider';
 
 interface DeadlineState {
-  deadlines: MockDeadline[];
-  upcomingDeadlines: MockDeadline[];
+  deadlines: Deadline[];
+  upcomingDeadlines: Deadline[];
   isLoading: boolean;
   error: string | null;
 }
@@ -13,7 +13,7 @@ interface DeadlineState {
 interface DeadlineContextValue extends DeadlineState {
   loadDeadlines: () => Promise<void>;
   loadUpcoming: (days?: number) => Promise<void>;
-  createDeadline: (data: Omit<MockDeadline, 'id' | 'completed'>) => Promise<MockDeadline>;
+  createDeadline: (data: CreateDeadlineRequest) => Promise<Deadline>;
   toggleComplete: (id: string) => Promise<void>;
   deleteDeadline: (id: string) => Promise<void>;
 }
@@ -22,10 +22,10 @@ const DeadlineContext = createContext<DeadlineContextValue | null>(null);
 
 type DeadlineAction =
   | { type: 'SET_LOADING' }
-  | { type: 'SET_DEADLINES'; payload: MockDeadline[] }
-  | { type: 'SET_UPCOMING'; payload: MockDeadline[] }
-  | { type: 'ADD_DEADLINE'; payload: MockDeadline }
-  | { type: 'UPDATE_DEADLINE'; payload: MockDeadline }
+  | { type: 'SET_DEADLINES'; payload: Deadline[] }
+  | { type: 'SET_UPCOMING'; payload: Deadline[] }
+  | { type: 'ADD_DEADLINE'; payload: Deadline }
+  | { type: 'UPDATE_DEADLINE'; payload: Deadline }
   | { type: 'REMOVE_DEADLINE'; payload: string }
   | { type: 'CLEAR' }
   | { type: 'SET_ERROR'; payload: string };
@@ -104,7 +104,7 @@ export function DeadlineProvider({ children }: DeadlineProviderProps) {
     }
   }, []);
 
-  const createDeadline = useCallback(async (data: Omit<MockDeadline, 'id' | 'completed'>) => {
+  const createDeadline = useCallback(async (data: CreateDeadlineRequest) => {
     try {
       const deadline = await deadlineService.create(data);
       dispatch({ type: 'ADD_DEADLINE', payload: deadline });

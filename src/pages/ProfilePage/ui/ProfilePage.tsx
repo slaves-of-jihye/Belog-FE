@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../entities/user/model/AuthProvider';
-import { boardService } from '../../../shared/api/boardService';
-import { MockPost } from '../../../shared/lib/mockData';
+import { getMyPosts } from '../../../entities/post/api/postApi';
+import { PostSummary } from '../../../entities/post/model/types';
 import { formatDate } from '../../../shared/lib/dateUtils';
 import { Button } from '../../../shared/ui/Button';
 import { Eye } from 'lucide-react';
@@ -11,13 +11,16 @@ import { Eye } from 'lucide-react';
 export function ProfilePage() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'posts' | 'likes' | 'comments'>('posts');
-  const [posts, setPosts] = useState<MockPost[]>([]);
+  const [posts, setPosts] = useState<PostSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
-    boardService.getAllPosts().then((data) => {
+    getMyPosts().then((data) => {
       setPosts(data);
+      setLoading(false);
+    }).catch(() => {
+      setPosts([]);
       setLoading(false);
     });
   }, [user]);
@@ -31,12 +34,11 @@ export function ProfilePage() {
     );
   }
 
-  const userId = String(user.id);
-  const myPosts = posts.filter((p) => p.authorId === userId);
-  const likedPosts = posts.filter((p) => p.likedUsers?.includes(userId));
-  const commentedPosts = posts.filter((p) => p.comments?.some((c) => c.authorId === userId));
+  const myPosts = posts;
+  const likedPosts: PostSummary[] = [];
+  const commentedPosts: PostSummary[] = [];
 
-  const getActivePosts = (): MockPost[] => {
+  const getActivePosts = (): PostSummary[] => {
     if (activeTab === 'posts') return myPosts;
     if (activeTab === 'likes') return likedPosts;
     if (activeTab === 'comments') return commentedPosts;
@@ -88,11 +90,11 @@ export function ProfilePage() {
         {loading && <EmptyText>로딩 중...</EmptyText>}
         {!loading && activePosts.length === 0 && <EmptyText>해당하는 게시물이 없습니다.</EmptyText>}
         {!loading && activePosts.map((post) => (
-          <PostCard key={post.id} to={`/post/${post.id}`}>
+          <PostCard key={post.postId} to={`/post/${post.postId}`}>
             <PostCardBody>
               <PostCardTitle>{post.title}</PostCardTitle>
               <PostCardMeta>
-                <span>{post.authorName}</span>
+                <span>{post.authorNickname}</span>
                 <span>·</span>
                 <span>{formatDate(post.createdAt)}</span>
               </PostCardMeta>
