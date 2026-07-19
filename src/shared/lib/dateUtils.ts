@@ -10,7 +10,7 @@ import {
   isSameMonth,
   isSameDay,
   isToday,
-  differenceInDays,
+  differenceInCalendarDays,
   differenceInHours,
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -22,10 +22,11 @@ export const formatDate = (date: string | Date, fmt = 'yyyy.MM.dd'): string => {
 export const formatRelativeDate = (dateStr: string): string => {
   const date = new Date(dateStr);
   const now = new Date();
-  const diffDays = differenceInDays(date, now);
-  const diffHours = differenceInHours(date, now);
+  // 24시간 단위가 아닌 달력 날짜 기준으로 비교해야 함.
+  // (밤 11시에 내일 오전 마감을 확인하면 24시간 미만이라 '오늘'로 잘못 표시됨)
+  const diffDays = differenceInCalendarDays(date, now);
 
-  if (diffDays === 0 && diffHours >= 0) return '오늘';
+  if (diffDays === 0) return '오늘';
   if (diffDays === 1) return '내일';
   if (diffDays === -1) return '어제';
   if (diffDays > 1 && diffDays <= 7) return `${diffDays}일 후`;
